@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Cheater",
+  "version": "1.0",
+  "description": "Smart Cheater",
+  "permissions": ["activeTab"],
+  "browser_action": {
+    "default_icon": "cheater.png",
+    "default_title": "Smart Cheater"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
