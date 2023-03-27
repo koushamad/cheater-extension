@@ -44,15 +44,24 @@ function connectToWS() {
     });
 
     socket.addEventListener('message', function(event) {
-        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket message received: ' + event });
+        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket message received: '});
+        browser.runtime.sendMessage({ action: 'log', text: event});
+
+        let msg = JSON.parse(event.data);
+        if (msg.client === client) {
+            browser.runtime.sendMessage({ action: 'log', text: msg});
+        }
     });
 
     socket.addEventListener('close', function(event) {
-        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket connection closed: '+ event });
+        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket connection closed: '});
+        browser.runtime.sendMessage({ action: 'log', text: event});
+        connectToWS();
     });
 
     socket.addEventListener('error', function(event) {
-        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket error: ' + event});
+        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket error: '});
+        browser.runtime.sendMessage({ action: 'log', text: event});
     });
 }
 

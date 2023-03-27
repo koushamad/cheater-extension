@@ -1,15 +1,16 @@
 console.log("Cheater Content is loaded");
 
 function getSelectedText() {
-    return window.getSelection().toString();
+    let selection = window.getSelection().toString();
+    return selection;
 }
 
 function readAllText() {
-    var elements = document.querySelectorAll('*');
+    var elements = document.querySelectorAll('body');
 
     var allText = '';
 
-    var blacklist = ['SCRIPT', 'STYLE', 'HEADER', 'FOOTER', 'INPUT', 'BUTTON', 'LINK'];
+    var blacklist = ['SCRIPT', 'STYLE', 'HEADER', 'FOOTER'];
 
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
