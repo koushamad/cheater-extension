@@ -40,6 +40,13 @@ function connectToWS() {
             content: 'register'
         };
 
+        setInterval(function () {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({type: 'ping'}));
+                console.log('Ping sent');
+            }
+        }, 1000); // Send a ping message every 30 seconds
+
         socket.send(JSON.stringify(message));
     });
 
