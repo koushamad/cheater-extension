@@ -35,7 +35,20 @@ browser.runtime.onMessage.addListener((message) => {
         if (!text) {
             text = readAllText();
         }
-
+        console.log('send text to server: ' + text);
         browser.runtime.sendMessage({ action: 'sendTextToServer', text: text });
     }
 });
+
+browser.runtime.onMessage.addListener((message) => {
+    if (message.action === 'log') {
+        let text = message.text;
+
+        console.log('Log: ' + text);
+    }
+});
+
+setTimeout(() => {
+    console.log('connect To WS')
+    browser.runtime.sendMessage({ action: 'connectToWS' });
+} , 500);

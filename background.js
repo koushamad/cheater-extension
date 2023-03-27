@@ -1,62 +1,60 @@
 console.log("Cheater Background is loaded");
 
 const apiKey = "test";
+const client = "firefox";
 // Define the WebSocket URL
 const serverURL = "wss://cheater-server-mbmu9.ondigitalocean.app/ws";
+// const serverURL = "ws://localhost:8080/ws";
 
 // Create a WebSocket connection
-const socket = new WebSocket(serverURL);
+var socket;
 
 async function sendTextToWS(text) {
-    // Connection opened
-    socket.addEventListener("open", (event) => {
-        // Check if the WebSocket connection is open before sending the message
-        if (socket.readyState === WebSocket.OPEN) {
-            // Create the JSON structure
-            const message = {
-                apiKey: apiKey,
-                client: "mac",
-                content: text,
-            };
-
-            // Send the JSON structure as a string
-            socket.send(JSON.stringify(message));
-        } else {
-            setTimeout(() => {
-                connectToWS();
-                sendTextToWS(text);
-            }, 1000);
-        }
-    });
-}
-
-
-async function connectToWS() {
-// Connection opened
-    socket.addEventListener("open", (event) => {
-        // JSON content to be sent
+    // Check if the WebSocket connection is open before sending the message
+    if (socket.readyState === WebSocket.OPEN) {
+        // Create the JSON structure
         const message = {
             apiKey: apiKey,
-            client: "firefox",
-            content: "register",
+            client: "mac",
+            content: text,
         };
 
-        // Send the JSON content as a string
+        // Send the JSON structure as a string
         socket.send(JSON.stringify(message));
-    });
+        browser.runtime.sendMessage({ action: 'log', text: 'Message sent: ' + text});
+    } else {
+        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket connection is not open'});
+    }
 }
 
-// Connection closed
-socket.addEventListener("close", (event) => {
-    connectToWS();
-    console.log("WebSocket connection closed:", event);
-});
 
-// Connection error
-socket.addEventListener("error", (event) => {
-    connectToWS();
-    console.log("WebSocket connection closed:", event);
-});
+function connectToWS() {
+    socket = new WebSocket(serverURL);
+
+    socket.addEventListener('open', function(event) {
+        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket connection established'});
+
+        var message = {
+            apiKey: apiKey,
+            client: client,
+            content: 'register'
+        };
+
+        socket.send(JSON.stringify(message));
+    });
+
+    socket.addEventListener('message', function(event) {
+        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket message received: ' + event });
+    });
+
+    socket.addEventListener('close', function(event) {
+        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket connection closed: '+ event });
+    });
+
+    socket.addEventListener('error', function(event) {
+        browser.runtime.sendMessage({ action: 'log', text: 'WebSocket error: ' + event});
+    });
+}
 
 browser.browserAction.onClicked.addListener(() => {
     browser.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -70,4 +68,8 @@ browser.runtime.onMessage.addListener((message) => {
     }
 });
 
-connectToWS();
+browser.runtime.onMessage.addListener((message) => {
+    if (message.action === 'connectToWS') {
+        connectToWS();
+    }
+});
