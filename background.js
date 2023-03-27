@@ -66,7 +66,7 @@ browser.browserAction.onClicked.addListener(() => {
 
 browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'sendTextToServer') {
-        sendSelectedTextToServer(message.text);
+        sendTextToWS(message.text);
     }
 });
 
