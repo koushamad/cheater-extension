@@ -1,26 +1,19 @@
-var isConnect = false;
-var ApiKey = "";
+// Use 'chrome' in Chrome and 'browser' in Firefox
+const storage = typeof chrome !== 'undefined' ? chrome.storage : browser.storage;
 
-document.addEventListener('DOMContentLoaded', function() {
-    var connectSwitch = document.getElementById('connect-switch');
-    var apiKeyInput = document.getElementById('apiKey');
+var PromptInput = document.getElementById('prompt');
 
+// Retrieve the stored prompt when the popup is opened
+storage.local.get('prompt', (result) => {
+    if (result.prompt) {
+        PromptInput.textContent = result.prompt;
+    }
+});
 
-    apiKeyInput.addEventListener('change', function() {
-        ApiKey = apiKeyInput.value;
-    });
+// Update the stored prompt whenever the input value changes
+PromptInput.addEventListener('change', function() {
+    var newPrompt = PromptInput.textContent;
 
-    connectSwitch.addEventListener('change', function() {
-        if (this.checked) {
-            var apiKey = apiKeyInput.value;
-            connectToWS(apiKey);
-            isConnect = true;
-        } else {
-            socket.close();
-            isConnect = false;
-        }
-    });
-
-    connectSwitch.value = isConnect;
-    apiKeyInput.value = ApiKey;
+    // Store the new prompt in the local storage
+    storage.local.set({ prompt: newPrompt });
 });

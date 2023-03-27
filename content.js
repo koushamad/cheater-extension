@@ -1,4 +1,4 @@
-console.log("Cheater Content is loaded");
+// console.log("Cheater Content is loaded");
 
 function getSelectedText() {
     let selection = window.getSelection().toString();
@@ -14,8 +14,6 @@ function readAllText() {
 
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
-
-        console.log(element.tagName)
 
         if (blacklist.indexOf(element.tagName) !== -1) {
             element.removeChild(element);
@@ -36,20 +34,28 @@ browser.runtime.onMessage.addListener((message) => {
         if (!text) {
             text = readAllText();
         }
-        console.log('send text to server: ' + text);
-        browser.runtime.sendMessage({ action: 'sendTextToServer', text: text });
+        browser.runtime.sendMessage({ action: 'AskToGPT', text: text });
+    }
+});
+
+browser.runtime.onMessage.addListener((message) => {
+    if (message === 'attachSelectedText') {
+        let text = getSelectedText();
+
+        if (!text) {
+            text = readAllText();
+        }
+        browser.runtime.sendMessage({ action: 'AttachToGPT', text: text });
     }
 });
 
 browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'log') {
         let text = message.text;
-
-        console.log('Log: ' + text);
+        console.log(text);
     }
 });
 
 setTimeout(() => {
-    console.log('connect To WS')
     browser.runtime.sendMessage({ action: 'connectToWS' });
 } , 500);

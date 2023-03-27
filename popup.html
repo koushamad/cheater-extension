@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="popup.js"></script>
     <title>Cheater Popup</title>
+    <script>
+        function
+        getPrompt() {
+            var prompt = document.getElementById("prompt").value;
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {prompt: prompt}, function(response) {
+                    // console.log(response.farewell);
+                });
+            });
+        }
+
+        getPrompt()
+    </script>
 </head>
 <body>
-<input type="text" id="apiKey" placeholder="Enter API key">
-<br>
-<br>
-<label>
-    Connect to server
-    <input type="checkbox" id="connect-switch">
-</label>
 
-<!--<script src="popup.js"></script>-->
+<div>
+    <h3>Cheater Popup</h3>
+    <textarea style="width: 200px; height: 200px"  id="prompt" placeholder="Enter Your Prompt"></textarea>
+</div>
+
 </body>
 </html>
