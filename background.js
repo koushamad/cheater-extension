@@ -4,10 +4,30 @@ const apiKey = "test";
 const client = "firefox";
 // Define the WebSocket URL
 const serverURL = "wss://cheater-server-mbmu9.ondigitalocean.app/ws";
-const prompt = "solve this challenge and develop it with Golang and explain your solution in english A2 level";
 
 // Create a WebSocket connection
 var socket;
+var prompt;
+var promptIsSend = true;
+
+async function askToGPTWithPrompt(text) {
+    // Check if the WebSocket connection is open before sending the message
+    if (socket.readyState === WebSocket.OPEN) {
+        // Create the JSON structure
+        const message = {
+            apiKey: apiKey,
+            client: "ios",
+            type: "ask",
+            content: prompt + "\n" + text,
+        };
+
+        // Send the JSON structure as a string
+        socket.send(JSON.stringify(message));
+        browser.runtime.sendMessage({action: 'log', text: 'Prompt sent: ' + prompt});
+    } else {
+        browser.runtime.sendMessage({action: 'log', text: 'WebSocket connection is not open'});
+    }
+}
 
 async function AskToGPT(text) {
     // Check if the WebSocket connection is open before sending the message
@@ -17,7 +37,7 @@ async function AskToGPT(text) {
             apiKey: apiKey,
             client: "ios",
             type: "ask",
-            content: prompt + "\n\n" + text,
+            content: prompt + "\n" + text,
         };
 
         // Send the JSON structure as a string
@@ -31,6 +51,11 @@ async function AskToGPT(text) {
 async function AttachToGPT(text) {
     // Check if the WebSocket connection is open before sending the message
     if (socket.readyState === WebSocket.OPEN) {
+
+        if (! promptIsSend) {
+            text = prompt + "\n" + text;
+        }
+
         // Create the JSON structure
         const message = {
             apiKey: apiKey,
@@ -88,9 +113,20 @@ function connectToWS() {
     });
 }
 
+function setPrompt() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'prompt.txt', true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            prompt = xhr.responseText;
+        }
+    };
+    xhr.send();
+}
+
 browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'AskToGPT') {
-        AskToGPT(message.text);
+        askToGPTWithPrompt(message.text);
     }
 });
 
@@ -103,6 +139,7 @@ browser.runtime.onMessage.addListener((message) => {
 browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'connectToWS') {
         connectToWS();
+        setPrompt();
     }
 });
 

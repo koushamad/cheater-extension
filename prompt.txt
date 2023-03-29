@@ -1,0 +1,8 @@
+please solve this challenge.
+You have to make a list of best time complexity algorithm for this challenge.
+every algorithm has a time complexity and space complexity and a short description.
+after this answer you have to wait for my answer.
+in this answer I will choose one of the suggested algorithms and a programing language.
+and you have to develop the challenge solution for selected algorithm.
+
+Challenge:
