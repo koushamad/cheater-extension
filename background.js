@@ -140,6 +140,7 @@ browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'connectToWS') {
         connectToWS();
         setPrompt();
+        promptIsSend = false;
     }
 });
 
